@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>home</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='/css/chat.css'>
+    <script src='main.js'></script>
+    <script src="./javascript/ChatScript.js">
+
+    </script>
+</head>
+<body>
+
+    <div class=window >
+        <div class="UsersDiv">
+            <div class="participant">
+                <p>participant</p>    
+                    <div class="wrap">
+                        <img id="profile-img" src="image/doctor.png" class="online" alt="" />
+                        <p>{}의사(나)</p>
+                        <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                    </div>
+                    <div class="wrap">
+                        <img id="profile-img" src="image/patient.png" class="online" alt="" />
+                        <p>환자</p>
+                        <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                    </div>
+            </div>
+            
+            
+        </div>
+
+        <div class="chatting">
+            <div class="profile">
+                <img src="image/doctor.png" alt="" />
+                <p>{}의사(나)</p>
+            </div>
+            <div class="logDiv">
+                <ul>
+                    <li class="replies">
+                        <img src="image/doctor.png" alt="" />
+                        <p>어디가 아프세요?</p>
+                    </li>
+                    <li class="sent">
+                        <img src="image/patient.png" alt="" />
+                        <p>배가아파요</p>
+                    </li>
+                    
+                </ul>
+            </div>
+            <form action="/" method="POST">
+                <input  class="input" type="text" placeholder="메세지를입력하세요">
+                <input  class="button"type="submit" value="전송">
+            </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

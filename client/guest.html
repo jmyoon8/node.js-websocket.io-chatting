@@ -12,30 +12,40 @@
     </script>
 </head>
 <body>
-    <div class=window>
-        
+
+    <div class=window >
         <div class="UsersDiv">
-            나<br>
-            guest<br>
-            or<br>
-            나<br>
-            의사
+            <div class="participant">
+                <p>participant</p>    
+                    <div class="wrap">
+                        <img id="profile-img" src="image/doctor.png" class="online" alt="" />
+                        <p>{}의사</p>
+                        <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                    </div>
+                    <div class="wrap">
+                        <img id="profile-img" src="image/patient.png" class="online" alt="" />
+                        <p>손님</p>
+                        <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                    </div>
+            </div>
+            
+            
         </div>
 
         <div class="chatting">
             <div class="profile">
-                <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-                <p>Harvey Specter</p>
+                <img src="image/patient.png" alt="" />
+                <p>손님</p>
             </div>
             <div class="logDiv">
                 <ul>
                     <li class="sent">
-                        <img src="image/patient.png" alt="" />
-                        <p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!</p>
+                        <img src="image/doctor.png" alt="" />
+                        <p>어디가 아프신가요?</p>
                     </li>
                     <li class="replies">
-                        <img src="image/doctor.png" alt="" />
-                        <p>When you're backed against the wall, break the god damn thing down.</p>
+                        <img src="image/patient.png" alt="" />
+                        <p>배가아파요!</p>
                     </li>
                 </ul>
             </div>
@@ -46,5 +56,6 @@
             </div>
         </div>
     </div>
+
 </body>
 </html>

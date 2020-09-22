@@ -1,40 +1,96 @@
+body{
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+    letter-spacing: 0.1px;
+}
 ul li{
     text-decoration-style: none;
     display: inline;
 }
-
-
 .window{
     float: left;
-    
     padding: 20px;
     border :  1px solid black;
     border-collapse: collapse;
-    width:700px;
-    height: 503px;
-    
-
+    width:900px;
+    height: 700px;
 }
 .UsersDiv{
     border :  1px solid black;
     border-collapse: collapse;
-    width:150px;
-    height: 500px;
+    width:200px;
+    height: 700px;
     position: absolute;
+    background-color: #32465a;
+}
+.participant{
+    letter-spacing: 0.1px;
+    text-rendering: optimizeLegibility;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+    color: #f5f5f5;
+    font-size: 100%;
+    width: 80%;
+    height: 92%;
+    margin: 25px auto;
+    background-color: teal;
+    padding-top: 10px;
+}
+
+.participant p{
+    color: #f5f5f5;
+    font-size: 140%;
+    text-align: center;
     
 }
+.wrap{
+    color: #f5f5f5;
+    font-size: 100%;
+    background-color: rgb(94, 173, 173);
+    padding-top: 10px;
+    height: 8%;
+
+}
+.wrap img{
+    text-align: left;
+    color: #f5f5f5;
+    box-sizing: border-box;
+    margin: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    width: 50px;
+    border-radius: 50%;
+    padding: 3px;
+    height: auto;
+    float: left;
+    cursor: pointer;
+    transition: 0.3s border ease;
+
+}
+.wrap p{
+    text-align: left;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+    color: #f5f5f5;
+    font-size: 120%;
+    float: left;
+    margin-left: 12px;
+    margin-top: 12px;
+
+}
+
 .chatting{
     float: right;
     border :  1px solid black;
     border-collapse: collapse;
-    width:530px;
-    height: 500px;
+    width:680px;
+    height: 700px;
     padding-left: 10px;
     background-color: #60a9eea8 ;
-    
-    
 }
-
 .profile{
     text-align: left;
     letter-spacing: 0.1px;
@@ -46,7 +102,7 @@ ul li{
     font: inherit;
     vertical-align: baseline;
     width: 98.5%;
-    height: 50px;
+    height: 80px;
     background: #f5f5f5;
     position: relative;
 }
@@ -56,7 +112,7 @@ ul li{
     color: #32465a;
     font: inherit;
     vertical-align: baseline;
-    width: 30px;
+    width: 60px;
     border-radius: 50%;
     float: left;
     margin: 9px 12px 0 9px;
@@ -66,11 +122,10 @@ ul li{
     text-align: left;
     color: #32465a;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-    font-size: 5px;
+    font-size: 25px;
     float: left;
-    margin-top: 18px;
+    margin-top: 30px;
 }
-
 .logDiv{
     text-align: left;
     letter-spacing: 0.1px;
@@ -78,13 +133,11 @@ ul li{
     text-rendering: optimizeLegibility;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
     box-sizing: border-box;
-    min-height: calc(100% - 95px);
-    width: 522px;
+    min-height: calc(100% - 160px);
+    width: 670px;
     overflow-y: auto;
     overflow-x: hidden; 
     background-color:#d6e6f7cc;
-    
-   
 }
 ul{
     text-align: left;
@@ -106,8 +159,6 @@ ul{
     letter-spacing: 0.1px;
     color: #32465a;
     text-rendering: optimizeLegibility;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
-    -webkit-font-smoothing: antialiased;
     list-style: none;
     box-sizing: border-box;
     padding: 0;
@@ -119,7 +170,6 @@ ul{
     float: left;
     margin: 15px 15px 5px 15px;
     width: calc(100% - 25px);
-    font-size: 0.9em;
 
 }
 .sent img{
@@ -135,22 +185,22 @@ ul{
     font-size: 100%;
     font: inherit;
     vertical-align: baseline;
-    width: 40px;
+    width: 60px;
     border-radius: 50%;
     float: left;
     margin: 6px 8px 0 0;
 }
 .sent p{
     letter-spacing: 0.1px;
+    color: #32465a;
     text-rendering: optimizeLegibility;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
     list-style: none;
     box-sizing: border-box;
     margin: 0;
     border: 0;
-    font-size: 100%;
     font: inherit;
-    vertical-align: baseline;
+    font-size: 130%;
     display: inline-block;
     padding: 10px 15px;
     border-radius: 20px;
@@ -158,6 +208,7 @@ ul{
     max-width: 300px;
     background: #435f7a;
     color: #f5f5f5;
+    float: left;
 }
 .replies{
     letter-spacing: 0.1px;
@@ -190,7 +241,7 @@ ul{
     font-size: 100%;
     font: inherit;
     vertical-align: baseline;
-    width: 40px;
+    width: 60px;
     border-radius: 50%;
     float: right;
     margin: 6px 0 0 8px;
@@ -204,52 +255,48 @@ ul{
     box-sizing: border-box;
     margin: 0;
     border: 0;
-    font-size: 100%;
     font: inherit;
-    vertical-align: baseline;
+    font-size: 130%;
     display: inline-block;
     padding: 10px 15px;
     border-radius: 20px;
     line-height: 130%;
     max-width: 300px;
-    background: #ffffff;
+    background: #2054e2;
+    color: white;
     float: right;
 }
 .input{
-    border :  1px solid black;
-    border-collapse: collapse;
-    width:400px;
-    height: 40px;
+    height: 80px;
     margin-left: 1px;
     margin-top: 1px;
     box-sizing: border-box;
     overflow: visible;
     margin: 0;
-    line-height: inherit;
     background-image: none;
     font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
     float: left;
     border: none;
-    width: calc(100% - 60px);
+    width: calc(100% - 98px);
     padding: 11px 32px 10px 8px;
-    font-size: 0.8em;
+    font-size: 25px;
     color: #32465a;
 }
 .button{
-    height: 40px;
-    width: 52px;
+    height: 80px;
+    width: 89px;
     text-align: center;
     vertical-align: middle;
     box-sizing: border-box;
     border-radius: 0;
     font-family: inherit;
-    font-size: inherit;
+    font-size: 130%;
     line-height: inherit;
     float: right;
     border: none;
     cursor: pointer;
     background: #32465a;
     color: #f5f5f5;
-    margin-right: 7.8px;
+    margin-right: 9px;
 }
 
