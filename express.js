@@ -2,7 +2,7 @@ const express =require('express');
 const server=express();
 
 
-server.use('/static',express.static(__dirname+'/static'))//css파일의 경로를 지정해두어 html에 css가 적용되도록한다.
+server.use('/css',express.static(__dirname+'/css'))//css파일의 경로를 지정해두어 html에 css가 적용되도록한다.
 server.use('/image',express.static(__dirname+'/image'))
 server.use('/javascript',express.static(__dirname+'/javascript'))
 
@@ -14,6 +14,12 @@ server.get("/",function(req,res){
     
 })
 
+server.get("/d",function(req,res){
+    
+    
+    res.sendFile(__dirname+"/template.html")
+    
+})
 
 //서버로의 요청이 post방식일때
 server.post("",function(req,res){
