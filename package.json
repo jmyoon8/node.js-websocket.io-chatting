@@ -1,0 +1,26 @@
+{
+  "name": "graffiti",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmyoon8/graffiti.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jmyoon8/graffiti/issues"
+  },
+  "homepage": "https://github.com/jmyoon8/graffiti#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "sanitize-html": "^1.27.4"
+  }
+}
