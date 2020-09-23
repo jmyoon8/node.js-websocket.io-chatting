@@ -6,53 +6,62 @@
     <title>home</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='/css/chat.css'>
-    <script src='main.js'></script>
+    
     <script src="./javascript/ChatScript.js">
 
     </script>
 </head>
 <body>
-
     <div class=window >
         <div class="UsersDiv">
             <div class="participant">
-                <p>participant</p>    
+                <p>participant</p>
+                <!-- <p><%=title%></p>    
+                <ul>
+                    <% array.forEach(function(vo){%>
+                        <li><%=vo.name+vo.age%></li>
+                    <%}) %>
+                    <li></li>
+                </ul> -->
                     <div class="wrap">
-                        <img id="profile-img" src="image/doctor.png" class="online" alt="" />
+                        <img id="profile-img" src="../image/doctor.png" class="online" alt="" />
                         <p>{}의사(나)</p>
                         <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                     </div>
                     <div class="wrap">
-                        <img id="profile-img" src="image/patient.png" class="online" alt="" />
+                        <img id="profile-img" src="../image/patient.png" class="online" alt="" />
                         <p>환자</p>
                         <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                     </div>
+                    <div class="menu">
+                        <p>메뉴</p><br>
+                        <a href="/standBy"><p>나가기</p></a><br>
+                        <p>연결끊기</p>
+                    </div>
             </div>
-            
-            
         </div>
-
         <div class="chatting">
             <div class="profile">
-                <img src="image/doctor.png" alt="" />
+                <img src="../image/doctor.png" alt="" />
                 <p>{}의사(나)</p>
             </div>
             <div class="logDiv">
                 <ul>
                     <li class="replies">
-                        <img src="image/doctor.png" alt="" />
+                        <img src="../image/doctor.png" alt="" />
                         <p>어디가 아프세요?</p>
                     </li>
                     <li class="sent">
-                        <img src="image/patient.png" alt="" />
+                        <img src="../image/patient.png" alt="" />
                         <p>배가아파요</p>
                     </li>
                     
                 </ul>
             </div>
-            <form action="/" method="POST">
-                <input  class="input" type="text" placeholder="메세지를입력하세요">
+            <form action="/doctor/message" name="chat" method="POST">
+                <input  class="input" type="text" name="message" placeholder="메세지를입력하세요" autofocus>
                 <input  class="button"type="submit" value="전송">
+                <input type="hidden" name="doctor" value="dd">
             </form>
             </div>
         </div>

@@ -15,11 +15,10 @@ const test ={
     age:20,
     description:"i am i'm"
 }
-fs.writeFileSync("./json/test.json",JSON.stringify(test, null , 2));
+fs.writeFileSync("test.json",JSON.stringify(test, null , 2));
                                                         //,null ,2를하면 이쁘게 저장한다.
                                                         
 //json 파일을 불러올땐 parse로 object화
 //json 파일을 저잘할땐 Stringify로 String화하여 저장해야한다.
 
-const express =require('express');
-const app=express();
+

@@ -300,3 +300,21 @@ ul{
     margin-right: 9px;
 }
 
+.menu{
+    margin-top: 300px;
+    color: #f5f5f5;
+    font-size: 100%;
+    background-color: rgb(46, 150, 150);
+    padding-top: 10px;
+    height: 5%;
+}
+.menu p{
+    line-height: 1;
+    font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+    border-collapse: collapse;
+    color: #f5f5f5;
+    font-size: 100%;
+    text-align: center;
+    margin-top: 5px;
+    
+}
