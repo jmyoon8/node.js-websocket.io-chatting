@@ -136,7 +136,7 @@ ul li{
     text-rendering: optimizeLegibility;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
     box-sizing: border-box;
-    max-height:  530px;
+    height:  540px;
     width: 670px;
     overflow-y: auto;
     overflow-x: hidden; 
