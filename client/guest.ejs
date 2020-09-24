@@ -12,19 +12,28 @@
     </script>
 </head>
 <body>
-
+      
     <div class=window >
         <div class="UsersDiv">
             <div class="participant">
-                <p>participant</p>    
+                <p><%=section%></p>
                     <div class="wrap">
-                        <img id="profile-img" src="../image/doctor.png" class="online" alt="" />
-                        <p>{}의사</p>
+                    <%if(doctor=="미접속"){%>
+                        <img id="profile-img" src="../image/doctor.png" style="border: solid 3px red;" class="online" alt="" />
+                    <%}else{%>
+                        <img id="profile-img" src="../image/doctor.png" style="border: solid 3px teal;" class="online" alt="" />
+                    <%}%> 
+                        <p><%=doctor%><p>
                         <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                     </div>
+
+                    <%if(guest!=null){%> 
                     <div class="wrap">
-                        <img id="profile-img" src="../image/patient.png" class="online" alt="" />
-                        <p>손님</p>
+                        <img id="profile-img" src="../image/patient.png" style="border: solid 3px teal;" class="online"/>
+                    <%}else{guest="미접속"%>
+                        <img id="profile-img" src="../image/patient.png" style="border: solid 3px red;" class="online"/>
+                    <%}%>
+                        <p><%=guest%></p>
                         <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                     </div>
                     <div class="menu">
@@ -41,7 +50,7 @@
         <div class="chatting">
             <div class="profile">
                 <img src="../image/patient.png" alt="" />
-                <p>손님</p>
+                <p>손님 :  <%=guest%>                          방번호 :<%=roomCode%>  </p>
             </div>
             <div class="logDiv">
                 <ul>
@@ -56,9 +65,13 @@
                 </ul>
             </div>
             <form action="/guest/message" method="POST">
-                <input  class="input" type="text" name="message" placeholder="메세지를입력하세요" autofocus>
-                <input  class="button"type="submit" value="전송">
-                <input type="hidden" name="guest" value="guest">
+                <input  class="input" type="text" name="message" placeholder="메세지를입력하세요" autofocus/>
+                <input  class="button"type="submit" value="전송"/>
+                <input type="hidden" name="guest" value="<%=guest%>"/>
+                <input type="hidden" name="section"value="<%=section%>"/>
+                <input type="hidden" name="roomCode" value="<%=roomCode%>"/>
+                <input type="hidden" name="doctor"value="<%=doctor%>"/>
+
             </form>
             </div>
         </div>

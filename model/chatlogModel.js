@@ -9,10 +9,11 @@ const mongoose = require('mongoose')
 
 const LogSchema=mongoose.Schema({
     
-    doctor:{//손님이 상담하고자하는 과선생을 입력
+    doctor:{
+        //손님이 상담하고자하는 과선생을 입력
         type:String
     },
-    name:{
+    guest:{
         //채팅하는 사람이 어떤 과의 의사선생인지, 손님(guest)인지 채크
         type:String 
     },

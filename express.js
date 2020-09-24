@@ -7,9 +7,15 @@ app.set('views',__dirname+"/client");// ejs 템플릿 소환 및 설정
 app.set('view engine','ejs');
 
 
-const mg = require('mongoose');//몽고DB연결->mongoose 소환 스키마와 모델을 이용해서 데이터를 다룸
+const mongoose = require('mongoose');//몽고DB연결->mongoose 소환 스키마와 모델을 이용해서 데이터를 다룸
 let DBURL="mongodb+srv://test:test@test.3qxcs.mongodb.net/chatDB?retryWrites=true&w=majority"
-mg.connect(DBURL,{useUnifiedTopology: true, useNewUrlParser: true}).then(()=>console.log('MongoDB connected...')).catch(err=>console.log(err));
+mongoose.connect(DBURL,{useUnifiedTopology: true, useNewUrlParser: true}).then(()=>console.log('MongoDB connected...')).catch(err=>console.log(err));
+
+//몽구스 지원중단 경고 띄우지 않기
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 
 
 app.use('/css',express.static(__dirname+'/css'));             //static(정적) 경로 등록방법
@@ -25,14 +31,51 @@ app.use(express.urlencoded({ extended: true }));
 const {LogModel}=require('./model/chatlogModel');
 const {StatusModel}=require('./model/roomStatusModel');
 
-//손님 챗팅방
-app.get("/guest",function(req,res){
-    // console.log(req.body.message)
-    var createRoom= new LogModel(req.query)
-    var room=new StatusModel({guest:1})
-    //Object.assign(req.body, {}) 받아온값에 값추가
-    res.render("guest");
+//손님 챗팅방 만들기
+app.get("/createRoom",function(req,res){
     
+    // http://localhost:2000/createRoom?guest=jmy&section=IM
+    //손님이 챗팅방에 들어오면 자동으로 roomcode를 시퀀스하여 방번호 생성(=방 생성) req에 손님이름 진료과 선정
+    StatusModel.findOne({guest:req.query.guest,section:req.query.section},(err,status)=>{
+        if(status==null){
+            StatusModel(req.query).save((err,statusInfo)=>{
+                if(!err){
+                    console.log("방생성성공!")
+                }else{
+                    console.log("이미 방이있습니다.")
+                }
+            })
+        }
+    })
+    setTimeout(() => {
+        res.redirect("/guest?guest="+req.query.guest+"&section="+req.query.section)        
+    }, 2000);
+    
+});
+
+//방만든 손님이 들어갈 방으로 보냄
+app.get("/guest",function(req,res){
+    var roomCodee=0;
+    //회원아이디로 방코드 알려주기
+        StatusModel.findOne({guest:req.query.guest,section:req.query.section},(err,status)=>{
+            if(err) return console.log("룸 스테이터스조회 실패")
+            if(!status) return console.log("방이없습니다.")
+            
+            
+            
+            roomCodee=status.roomCode
+            // console.log(Object.assign(req.query,{roomCode:roomCodee})) 
+            Object.assign(req.query,{roomCode:roomCodee})
+            //의사가 없을경우
+            if(!status.doctor){
+
+                
+                Object.assign(status,{doctor:"미접속"})
+            }
+            
+            console.log("룸스테이트 : "+status)
+            res.render("guest",status);
+    })
 });
 
 //손님 메세지를 post방식으로 보냄
