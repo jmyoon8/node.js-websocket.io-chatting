@@ -7,9 +7,9 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='/css/chat.css'>
     
-    <script src="./javascript/ChatScript.js">
+    <script src="../javascript/ChatScript.js"></script>
 
-    </script>
+    
 </head>
 <body>
       
@@ -37,9 +37,14 @@
                         <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                     </div>
                     <div class="menu">
-                        <p>메뉴</p><br>
-                        <p>나가기</p><br>
-                        <p>연결끊기</p>
+                        <%if(guest){%>
+                            <p>메뉴</p><br>
+                            <p>연결끊기</p>
+                        <%}else if(dotocr){%>
+                            <p>메뉴</p><br>
+                            <p>연결끊기</p>
+                            <p>나가기</p>
+                        <%}%>
                     </div>
             </div>
            
@@ -54,14 +59,24 @@
             </div>
             <div class="logDiv">
                 <ul>
+                    <%if(conversation=="emptyLog"){%>
+                        <p style="text-align: center;">대화가없습니다 대화를 시작해보세요!</p>
+                    <%}else{%>
+                      <% for(var i =0; i<conversation.length; i++){%>
+                          <% if(conversation[i].who=='guest'){%>
+                            <li class="replies">
+                                <img src="../image/patient.png" />
+                                <p><%=conversation[i].message%></p>
+                            </li>
+                        <%}%>
+                      <%}%>
+                    <%}%>
+                
                     <li class="sent">
                         <img src="../image/doctor.png" alt="" />
                         <p>어디가 아프신가요?</p>
                     </li>
-                    <li class="replies">
-                        <img src="../image/patient.png" alt="" />
-                        <p>배가아파요!</p>
-                    </li>
+                 
                 </ul>
             </div>
             <form action="/guest/message" method="POST">
@@ -71,7 +86,7 @@
                 <input type="hidden" name="section"value="<%=section%>"/>
                 <input type="hidden" name="roomCode" value="<%=roomCode%>"/>
                 <input type="hidden" name="doctor"value="<%=doctor%>"/>
-
+                <input type="hidden" name="who"value="<%=who%>"/>
             </form>
             </div>
         </div>

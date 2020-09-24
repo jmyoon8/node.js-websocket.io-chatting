@@ -5,6 +5,8 @@
 String, Number, Date, Buffer ,Boolean, Mixed, ObjectId, Array
 
 */
+
+const e = require('express');
 const mongoose = require('mongoose')
 
 const LogSchema=mongoose.Schema({
@@ -29,10 +31,17 @@ const LogSchema=mongoose.Schema({
         //닥터가 어떤 방에 들어가면 그 방의 코드를 DB에 올림
         type:String
     },
-    data:{
+    date:{
         //챗팅 입력 날짜
         type:Date
     },
+    who:{
+        type:String
+    },
+    lfl:{
+        type:Number,
+        default:1
+    }
     
 });
 
