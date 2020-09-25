@@ -23,10 +23,6 @@ const LogSchema=mongoose.Schema({
         //챗팅 매새지
         type:String
     },
-    Status:{
-        //읽었는지않읽었는지 상태 (의사가 방에 들어오면 사라짐)
-        type:Number
-    },
     roomCode:{
         //닥터가 어떤 방에 들어가면 그 방의 코드를 DB에 올림
         type:String
@@ -41,6 +37,9 @@ const LogSchema=mongoose.Schema({
     lfl:{
         type:Number,
         default:1
+    },
+    section:{
+        type:String
     }
     
 });

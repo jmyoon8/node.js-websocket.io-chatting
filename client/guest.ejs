@@ -18,12 +18,12 @@
             <div class="participant">
                 <p><%=section%></p>
                     <div class="wrap">
-                    <%if(doctor=="미접속"){%>
+                    <%if(doctor==null){%>
                         <img id="profile-img" src="../image/doctor.png" style="border: solid 3px red;" class="online" alt="" />
                     <%}else{%>
                         <img id="profile-img" src="../image/doctor.png" style="border: solid 3px teal;" class="online" alt="" />
                     <%}%> 
-                        <p><%=doctor%><p>
+                        <p><%if(doctor==null){doctor="미접속"}%><%=doctor%><p>
                         <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                     </div>
 
@@ -37,21 +37,17 @@
                         <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                     </div>
                     <div class="menu">
-                        <%if(guest){%>
+                        <%if(who=='guest'){%>
                             <p>메뉴</p><br>
                             <p>연결끊기</p>
-                        <%}else if(dotocr){%>
+                        <%}else if(who=='doctor'){%>
                             <p>메뉴</p><br>
                             <p>연결끊기</p>
-                            <p>나가기</p>
+                            <p><a href="/standby?section=<%=section%>&roomCode=<%=roomCode%>">나가기</a></p>
                         <%}%>
                     </div>
             </div>
-           
-            
-            
         </div>
-
         <div class="chatting">
             <div class="profile">
                 <img src="../image/patient.png" alt="" />
@@ -59,24 +55,45 @@
             </div>
             <div class="logDiv">
                 <ul>
+                    
                     <%if(conversation=="emptyLog"){%>
-                        <p style="text-align: center;">대화가없습니다 대화를 시작해보세요!</p>
+                        <p style="text-align: center;">대화가없습니다 대화를 시작해보세요!!!!</p>
                     <%}else{%>
-                      <% for(var i =0; i<conversation.length; i++){%>
-                          <% if(conversation[i].who=='guest'){%>
-                            <li class="replies">
-                                <img src="../image/patient.png" />
-                                <p><%=conversation[i].message%></p>
-                            </li>
+                        <!-- 손님일경우에 보여지는 대화로그 -->
+                        <%if(who=='guest'){%>
+                            <% for(var i =0; i<conversation.length; i++){%>
+                                <% if(conversation[i].who=='guest'){%>
+                                    <li class="replies">
+                                        <img src="../image/patient.png" />
+                                    <p class="message"><%=conversation[i].message%></p><p class="lfl"><%=conversation[i].lfl%></p>
+                                    
+                                    </li>
+                                <%}else if(conversation[i].who=='doctor'){%>
+                                    <li class="sent">
+                                        <img src="../image/doctor.png" />
+                                        <p><%=conversation[i].message%></p>
+                                    </li>
+                                <%}%>
+                            <%}%>
                         <%}%>
-                      <%}%>
+                        <!-- 의사일경우 보여지는 대화로그 -->
+                        <%if(who=='doctor'){%>
+                            <%for(var i =0; i<conversation.length; i++){%>
+                                <%if(conversation[i].who=='guest'){%>
+                                    <li class="sent">
+                                        <img src="../image/patient.png" />
+                                    <p><%=conversation[i].message%></p>
+                                    </li>
+                                <%}else if(conversation[i].who=='doctor'){%>
+                                    <li class="replies">
+                                        <img src="../image/doctor.png"  />
+                                        <p class="message"><%=conversation[i].message%></p>
+                                    </li>
+                                <%}%>
+                            <%}%>
+                        <%}%>
                     <%}%>
-                
-                    <li class="sent">
-                        <img src="../image/doctor.png" alt="" />
-                        <p>어디가 아프신가요?</p>
-                    </li>
-                 
+                         
                 </ul>
             </div>
             <form action="/guest/message" method="POST">

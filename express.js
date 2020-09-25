@@ -1,4 +1,5 @@
 const { json } = require('body-parser');
+const { compile } = require('ejs');
 const express = require('express');//express 소환
 const app = express();
 
@@ -56,74 +57,145 @@ app.get("/createRoom",function(req,res){
 });
 
 //방만든 손님이 들어갈 방으로 보냄
+
 app.get("/guest",function(req,res){
     var roomCodee=0;
     //회원아이디로 방코드 알려주기
+    
+    if(req.query.doctor!=undefined){
+        
+        //http://localhost:2000/guest?guest=jmy&section=IM&who=doctor&doctor=IM 접속방법
+        //닥터가 방에 들어갈경우 roomstatus를 찾아 doctor 부분에 닥터 섹션 update(방에접속했는지 안했는지 확인)
+        StatusModel.findOneAndUpdate({guest:req.query.guest,section:req.query.section},{doctor:req.query.doctor},(err,status)=>{
+           if(!status){console.log("방을 못찾았습니다.")}
+       
+        })
+         //닥터가 방에들어가는순간 lfl 값 0이됨(읽음표시)
+         
+         LogModel.updateMany({guest:req.query.guest,section:req.query.section},{lfl:0},(err,status)=>{
+            
+            
+            
+        })
+    }
+        //
         StatusModel.findOne({guest:req.query.guest,section:req.query.section},(err,status)=>{
             if(err) return console.log("룸 스테이터스조회 실패")
             if(!status) return console.log("방이없습니다.")
             
             roomCodee=status.roomCode
-            // console.log(Object.assign(req.query,{roomCode:roomCodee})) 
+    
             Object.assign(req.query,{roomCode:roomCodee})
             //의사가 없을경우
             if(!status.doctor){
-                Object.assign(status,{doctor:"미접속",who:req.query.who})
-                console.log(status)
+                Object.assign(status,{doctor:null,who:req.query.who})
+                
             }
             if(!status.conversation){
                 status.conversation="emptyLog"
+                
             }
-            console.log(status)
-            // console.log("룸스테이트 : "+status)
-            res.render("guest",status);
-    })
+            LogModel.find({roomCode:status.roomCode},(err,logs)=>{
+          
+                if(logs.length==0){
+                    
+                    return res.render("guest",Object.assign(status,{who:req.query.who,conversation:"emptyLog"}));
+                }
+                
+                
+                res.render("guest",Object.assign(status,{who:req.query.who,conversation:logs}));
+            })
+            
+            
+
+        })
 });
 
 //손님 메세지를 post방식으로 보냄
-app.post("/guest/message",(req,res)=>{
+app.post("/guest/message", (req,res)=>{
+
+    var st =req.body
+    StatusModel.findOne({roomCode:req.body.roomCode},(err,status)=>{
+        
+        
+        Object.assign(st,{doctor:status.doctor})      
+        if(st.doctor!=null){
+        
+            //http://localhost:2000/guest?guest=jmy&section=IM&who=doctor&doctor=IM 접속방법
+            //닥터가 방에 들어갈경우 roomstatus를 찾아 doctor 부분에 닥터 섹션 update(방에접속했는지 안했는지 확인)
+            StatusModel.findOneAndUpdate({guest:req.body.guest,section:req.body.section},{doctor:req.body.doctor},(err,status)=>{
+               if(!status){console.log("방을 못찾았습니다.")}
+           
+            })
+             //닥터가 방에들어가는순간 lfl 값 0이됨(읽음표시)
     
-    let nowDate=new Date()
-    
-    req.body=Object.assign(req.body,{date:nowDate})
-    
-    //로그저장하기
-    LogModel(req.body).save((err,logModel)=>{
-        if(err)return console.log("message저장실패")
-    })
-    setTimeout(() => {
-         //로그 불러와서 뿌려주기
-        //  console.log("방금 입력한값 : ",req.body.message)
-        LogModel.find({guest:req.body.guest,roomCode:req.body.roomCode},(err,logs)=>{
-        if(err)return console.log(err)
-        if(logs){
-            Object.assign(req.body,{conversation:logs})
-        }else{
-            Object.assign(req.body,{conversation:"대화없음"})
-            console.log("대화없을때 : ",Object.assign(req.body,{conversation:"대화없음"}))
-            
+            LogModel.updateMany({guest:req.body.guest,section:req.body.section},{lfl:0},(err,status)=>{
+                
+                
+            })
         }
-        res.render("guest",req.body);
-    })
-    }, 100);
-   
+        
+        let nowDate=new Date()
+        
+        st=Object.assign(st,{date:nowDate})
+        
+        //로그저장하기
+        LogModel(st).save((err,logModel)=>{
+            if(err)return console.log("message저장실패")
+        })
+        setTimeout(() => {
+             //로그 불러와서 뿌려주기
+             
+            LogModel.find({guest:req.body.guest,roomCode:req.body.roomCode},(err,logs)=>{
+            if(err)return console.log(err)
+            if(logs){
+                Object.assign(req.body,{conversation:logs})
+            }else{
+                Object.assign(req.body,{conversation:"대화없음"})
+                console.log("대화없을때 : ",Object.assign(req.body,{conversation:"대화없음"}))
+            }
+            
+            StatusModel.findOne({roomCode:req.body.roomCode},(err,status)=>{
+                req.body=Object.assign(req.body,{doctor:status.doctor})
+                
+                
+                res.render("guest",req.body);
+            })
+            
+        })
+        }, 50);
+           
+        
+    })   
+
     
 });
 
 
 
 //의사 챗팅방 목록보기
+// http://localhost:2000/standBy?section=IM
 app.get("/standBy",function(req,res){
     
+    StatusModel.find({section:req.query.section},(err,List)=>{
+        if(err) return console.log("dddd",err)
+        var roomList={rooms:List}
+        //글의 갯수 구하기 (populate를통해)
+        res.render("standBy",{rooms:List,section:req.query.section,roomCount:roomList.rooms.length});
+    })
     
-    
-    res.render("standBy");
-    
+    if(req.query.roomCode){
+            
+        StatusModel.updateMany({roomCode:req.query.roomCode},{doctor:null},(err,status)=>{
+            
+        })
+
+    }
 });
 //의사 챗팅방
 app.get("/doctor",function(req,res){
     
-    console.log(req.query.message);
+    
     
     
     //res.sendFile(__dirname+"/client/doctor.html")
@@ -131,6 +203,7 @@ app.get("/doctor",function(req,res){
     //랜더를 통해 페이지 이동
     res.render("doctor",{title:"express",array:[{name:"1",age:"일"},{name:"2",age:"이"}]});
 });
+
 //의사 챗팅방에서 post(챗팅입력)값받기
 app.post("/doctor/message",(req,res)=>{
 
