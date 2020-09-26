@@ -28,6 +28,9 @@ const StatusSchema=mongoose.Schema({
         //손님이 방에있으면 아이디생성
         type:String
         
+    },
+    guestIO:{
+        type:Number
     }
 })
 

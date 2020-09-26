@@ -6,52 +6,58 @@
     <title>home</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='/css/chat.css'>
-    
     <script src="../javascript/ChatScript.js"></script>
-
-    
 </head>
 <body>
-      
+    <div class="test">
+
+    </div>
     <div class=window >
         <div class="UsersDiv">
             <div class="participant">
                 <p><%=section%></p>
-                    <div class="wrap">
-                    <%if(doctor==null){%>
-                        <img id="profile-img" src="../image/doctor.png" style="border: solid 3px red;" class="online" alt="" />
-                    <%}else{%>
-                        <img id="profile-img" src="../image/doctor.png" style="border: solid 3px teal;" class="online" alt="" />
-                    <%}%> 
-                        <p><%if(doctor==null){doctor="미접속"}%><%=doctor%><p>
-                        <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-                    </div>
-
-                    <%if(guest!=null){%> 
-                    <div class="wrap">
-                        <img id="profile-img" src="../image/patient.png" style="border: solid 3px teal;" class="online"/>
-                    <%}else{guest="미접속"%>
-                        <img id="profile-img" src="../image/patient.png" style="border: solid 3px red;" class="online"/>
+                <div class="wrap">
+                <%if(doctor==null){%>
+                    <img id="profile-img" src="../image/doctor.png" style="border: solid 3px red;" class="online" alt="" />
+                <%}else{%>
+                    <img id="profile-img" src="../image/doctor.png" style="border: solid 3px teal;" class="online" alt="" />
+                <%}%> 
+                    <p><%if(doctor==null){doctor="미접속"}%><%=doctor%><p>
+                    <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                </div>
+                <div class="wrap">
+                <%if(guestIO!=0){%> 
+                    <img id="profile-img" src="../image/patient.png" style="border: solid 3px teal;" class="online"/>
+                    <p><%=guest%></p>
+                    <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                <%}else{guestIO==0%>
+                    <img id="profile-img" src="../image/patient.png" style="border: solid 3px red;" class="online"/>
+                    <p style="font-size: 13px;"><%=guest%>님은<br>퇴장하셨습니다.</p>
+                    <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                <%}%>
+                </div>
+                <div class="menu">
+                    <%if(who=='guest'){%>
+                        <p>메뉴</p><br>
+                        <!-- 손님이 나가면 그냥 roomdstatus에 손님 아이디 없엔뒤 창을끈다. -->
+                        <p><a href="" onclick="self.closee()" >나가기</a></p>
+                    <%}else if(who=='doctor'){%>
+                        <p>메뉴</p><br>
+                        <p><a href="/standby?section=<%=section%>&roomCode=<%=roomCode%>">나가기</a></p>
                     <%}%>
-                        <p><%=guest%></p>
-                        <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-                    </div>
-                    <div class="menu">
-                        <%if(who=='guest'){%>
-                            <p>메뉴</p><br>
-                            <p>연결끊기</p>
-                        <%}else if(who=='doctor'){%>
-                            <p>메뉴</p><br>
-                            <p>연결끊기</p>
-                            <p><a href="/standby?section=<%=section%>&roomCode=<%=roomCode%>">나가기</a></p>
-                        <%}%>
-                    </div>
+                </div>
             </div>
         </div>
         <div class="chatting">
             <div class="profile">
-                <img src="../image/patient.png" alt="" />
-                <p>손님 :  <%=guest%>                          방번호 :<%=roomCode%>  </p>
+                <%if(who=='guest'){%>
+                    <img src="../image/patient.png" alt="" />
+                    <p>손님 :  <%=guest%>                          방번호 :<%=roomCode%>  </p>
+                <%}else{%>
+                    <img src="../image/doctor.png" alt="" />
+                    <p>의사 :  <%=doctor%>                          방번호 :<%=roomCode%>  </p>
+                <%}%>
+                
             </div>
             <div class="logDiv">
                 <ul>
@@ -96,14 +102,17 @@
                          
                 </ul>
             </div>
-            <form action="/guest/message" method="POST">
-                <input  class="input" type="text" name="message" placeholder="메세지를입력하세요" autofocus/>
-                <input  class="button"type="submit" value="전송"/>
+            <form action="/guest/message" name="chatting" method="POST">
+                <input class="button" value="전송" onclick="ajaxMessage();">
+                <!-- 보내야될 데이터 -->
+                <input class="input" type="text" name="message" onKeypress="if(event.keyCode==13){ajaxMessage();}"  placeholder="메세지를입력하세요" autofocus/>
                 <input type="hidden" name="guest" value="<%=guest%>"/>
                 <input type="hidden" name="section"value="<%=section%>"/>
                 <input type="hidden" name="roomCode" value="<%=roomCode%>"/>
                 <input type="hidden" name="doctor"value="<%=doctor%>"/>
                 <input type="hidden" name="who"value="<%=who%>"/>
+                <input type="hidden" name="guestIO" value="<%=guestIO%>">
+                <input type="hidden" name="conversation" value="<%=conversation%>">
             </form>
             </div>
         </div>
