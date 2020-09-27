@@ -19,14 +19,20 @@ function closee(){
     })
     window.self.close();
 }
-//대화할때 사용할 AJAX
+// //대화할때 사용할 AJAX
 function ajaxMessage() {
     //보내야할 데이터
     var message = document.chatting.message.value;
-    var guest=document.chatting.message.value;
+    var guest=document.chatting.guest.value;
     var section=document.chatting.section.value;
     var roomCode = document.chatting.roomCode.value;
+
     var doctor=document.chatting.doctor.value;
+    
+   if(doctor==""){
+       doctor==null
+   }
+  
     var who=document.chatting.who.value;
     var guestIO=document.chatting.guestIO.value;
     
@@ -50,6 +56,7 @@ function ajaxMessage() {
         
     
     var result=JSON.parse(ajax.responseText)
+    alert(result)
     if(result.roomMiss==true){
         alert("방이없습니다.!!!")
         self.close();
@@ -58,15 +65,16 @@ function ajaxMessage() {
   
     var test=document.querySelector(".test");
     var list="";
-    for(var a =0; a<result.length; a++){
-        list=list+result[a].message+" ";
+    for(var a =0; a<result.conversation.length; a++){
+        list=list+result.conversation[a].message+" ";
         
     }
+    alert(list)
     test.innerHTML=list
 
 
-
-
+// 인풋쪽 
+// 버튼쪽 
 
 
 

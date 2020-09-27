@@ -1,6 +1,23 @@
-
 const express = require('express');//express 소환
 const app = express();
+
+//웹소캣 준비(http로 리슨해야한다.)
+const http = require('http').createServer(app);
+const io = require('socket.io')(http)
+//포트지정
+
+//소캣포트
+http.listen(2000,function(err){
+    if(err) return console.log(err);
+    console.log("the sever is listening on 2000")
+});
+
+
+app.get('/e', (req, res) => {
+    
+    res.render('socket')
+  });
+
 
 
 app.set('views',__dirname+"/client");// ejs 템플릿 소환 및 설정
@@ -32,20 +49,18 @@ const {LogModel}=require('./model/chatlogModel');
 const {StatusModel}=require('./model/roomStatusModel');
 
 //손님 챗팅방 만들거나 기존에 있던방 들어가기
-app.get("/CROIR",function(req,res){
+app.get("/CROIR", (req,res)=>{
+
     
+   
     // http://localhost:2000/CROIR?guest=jmyy&section=IM&who=guest     손님이 들어올 URL
     //손님이 챗팅방에 들어오면 자동으로 roomcode를 시퀀스하여 방번호 생성(=방 생성) req에 손님이름 진료과 선정
-    StatusModel.findOne({guest:req.query.guest,section:req.query.section},(err,status)=>{
+    StatusModel.findOne({guest:req.query.guest,section:req.query.section},  function(err,status){
         console.log("방들어가기전 있는지없는지 체크",status)
         if(status==null){
             var status= Object.assign(req.query,{guestIO:1})
             StatusModel(status).save((err,statusInfo)=>{
-                if(!err){
-                    console.log("방생성성공!")
-                }else{
-                    console.log("이미 방이있습니다.")
-                }
+                if(!status)console.log("방생성성공!")
             })
         }else{
             StatusModel.findOneAndUpdate({guest:req.query.guest,section:req.query.section},{guestIO:1},(err,status)=>{
@@ -53,15 +68,17 @@ app.get("/CROIR",function(req,res){
             })
         }
     })
-    setTimeout(() => {
-        res.redirect("/guest?guest="+req.query.guest+"&section="+req.query.section+"&who="+req.query.who)        
-    }, 500);
+    res.redirect("/guest?guest="+req.query.guest+"&section="+req.query.section+"&who="+req.query.who)       
+  
+     
 });
 
 //방만든 손님이 들어갈 방으로 보냄
 
-app.get("/guest",function(req,res){
+app.get("/guest", async function(req,res){
+    
     var roomCodee=0;
+    
     //회원아이디로 방코드 알려주기
     if(req.query.doctor!=undefined){
         //http://localhost:2000/guest?guest=jmy&section=IM&who=doctor&doctor=IM 접속방법
@@ -70,8 +87,7 @@ app.get("/guest",function(req,res){
            if(!status){console.log("방을 못찾았습니다.")}
         })
          //닥터가 방에들어가는순간 lfl 값 0이됨(읽음표시)
-         
-         LogModel.updateMany({guest:req.query.guest,section:req.query.section},{lfl:0},(err,status)=>{
+        await LogModel.updateMany({guest:req.query.guest,section:req.query.section},{lfl:0},(err,status)=>{
         })
     }
         StatusModel.findOne({guest:req.query.guest,section:req.query.section},(err,status)=>{
@@ -100,9 +116,20 @@ app.get("/guest",function(req,res){
         })
 });
 
-//손님 메세지를 post방식으로 보냄
-app.post('/guest/message',(req,res)=>{
-    console.log("갔냐?? : ",req.body)
+io.on('connection', function(Socket){
+    console.log("소캣 연결완료이으이응")
+    Socket.on ( 'chat message' , (msg) => { 
+        console.log("소캣매새지 : ",msg)
+        io.emit ( 'chat message' , msg); 
+      }); 
+    Socket.on('disconnect',()=>{
+        console.log("연결끊음")
+        io.emit('chat message',"연결이 끊겼습니다.!")
+    })
+})
+
+// /손님 메세지를 post방식으로 보냄(ajax)
+app.post('/guest/message',async function(req,res){
     
     //방이있냐?
     var ar=""
@@ -111,10 +138,11 @@ app.post('/guest/message',(req,res)=>{
 
     //logdata 에 추가할 날짜
     var date=new Date();
-    
     async function a(){
+        
         //방이있는지 없는지 확인
-        await StatusModel.findOne({roomCode:req.body.roomCode}).then((result)=>{
+       await StatusModel.findOne({roomCode:req.body.roomCode}).then((result)=>{
+           //없으면 없다고 말해준다.
             if(result==null){
                 return res.send({roomMiss:true}) 
             }
@@ -123,28 +151,45 @@ app.post('/guest/message',(req,res)=>{
         //일단 값을 입력하자
         var log = Object.assign(req.body,{lfl:1,date:date})
         LogModel(log).save((err, status)=>{
-            if(!err)console.log(status)
+            if(!err)console.log("방금쓴값 : ",status.message)
 
-            })
+        })
         //닥터가 방에있는지 없는지 찾아보자
-        await StatusModel.findOne({roomCode:req.body.roomCode},(err,result)=>{
-            doctorStat=result.doctor
-            })
-        //닥터가 방에있다면 해당방의 모든 lfl을 0으로 만든다.
-        if(doctor!=null){
-            LogModel.updateMany({roomCode:req.body.roomCode},{lfl:0},(err,result)=>{
+        await StatusModel.findOne({roomCode:req.body.roomCode},function(err,result){
+            
+            doctor=result.doctor
+            
+             //닥터가 방에있다면 해당방의 모든 lfl을 0으로 만든다.
+            if(doctor!=null){
+                LogModel.updateMany({roomCode:req.body.roomCode},{lfl:0},(err,result)=>{
+            
             })
         }
-        //마지막으로 모든 message를 보내준다.
-        LogModel.find({roomCode:req.body.roomCode},(err,result)=>{
-            console.log("대화들",result)
-            res.json(result)
         })
+        //마지막으로 모든 message를 보내준다.
+        var statuss={}
+        StatusModel.findOne({roomCode:req.body.roomCode},(err,status)=>{
+                statuss.guest=status.guest;
+                statuss.section=status.section;
+                statuss.guestIO=status.guestIO;
+                statuss.roomCode=status.roomCode;
+                statuss.doctor=status.doctor;
+                statuss.who=req.body.who
+                
+                LogModel.find({roomCode:req.body.roomCode},(err,result)=>{
+                    
+                    res.json(Object.assign(statuss,{conversation:result})) 
+                    
+                })    
+        }) 
+    // console.log("대화들",result)
+        
+    // res.render('guest',result)
+            // res.json(result) 
+         
     }
-
     a();
-  
-    
+   
     // LogModel(req.body).save(req.body)
 })
 // app.post("/guest/message", (req,res)=>{
@@ -256,10 +301,3 @@ app.use((req,res)=>{
 });
 
 
-//포트지정
-app.listen(2000,function(err){
-    if(err) return console.log(err);
-
-
-    console.log("the sever is listening on 2000")
-});
