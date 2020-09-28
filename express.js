@@ -6,18 +6,13 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http)
 //포트지정
 
-//소캣포트
-http.listen(2000,function(err){
-    if(err) return console.log(err);
-    console.log("the sever is listening on 2000")
-});
+
 
 
 app.get('/e', (req, res) => {
-    
-    res.render('socket')
-  });
 
+    res.render('socket')
+});
 
 
 app.set('views',__dirname+"/client");// ejs 템플릿 소환 및 설정
@@ -51,8 +46,6 @@ const {StatusModel}=require('./model/roomStatusModel');
 //손님 챗팅방 만들거나 기존에 있던방 들어가기
 app.get("/CROIR", (req,res)=>{
 
-    
-   
     // http://localhost:2000/CROIR?guest=jmyy&section=IM&who=guest     손님이 들어올 URL
     //손님이 챗팅방에 들어오면 자동으로 roomcode를 시퀀스하여 방번호 생성(=방 생성) req에 손님이름 진료과 선정
     StatusModel.findOne({guest:req.query.guest,section:req.query.section},  function(err,status){
@@ -73,9 +66,37 @@ app.get("/CROIR", (req,res)=>{
      
 });
 
-//방만든 손님이 들어갈 방으로 보냄
+var whojoin=""
+var whoOut=""
+io.on('connection', function(Socket){
+    
+    //의사/손님이 서버에 들어왔을때 가 들어올때
+    console.log("다시들어왔습니다.")
+    if(whojoin!='doctor'){
+        io.emit ( 'chat message' ,'doctor'); 
+    }else {
+        io.emit ( 'chat message' ,'guest'); 
+    }
 
+    
+    //매세지를 보낼때 실행되는곳
+    Socket.on ( 'chat message' , (msg) => { 
+        console.log(msg.message)
+        
+        io.emit ( 'chat message' , msg); 
+    }); 
+    //나갈 때 실행되는곳
+    Socket.on('disconnect',()=>{
+        console.log("끈겼습니다.")
+        
+        io.emit('chat message',"off")
+    });
+})
+
+//방만든 손님이 들어갈 방으로 보냄
 app.get("/guest", async function(req,res){
+    whojoin=req.query.who
+    
     
     var roomCodee=0;
     
@@ -116,131 +137,14 @@ app.get("/guest", async function(req,res){
         })
 });
 
-io.on('connection', function(Socket){
-    console.log("소캣 연결완료이으이응")
-    Socket.on ( 'chat message' , (msg) => { 
-        console.log("소캣매새지 : ",msg)
-        io.emit ( 'chat message' , msg); 
-      }); 
-    Socket.on('disconnect',()=>{
-        console.log("연결끊음")
-        io.emit('chat message',"연결이 끊겼습니다.!")
-    })
-})
 
-// /손님 메세지를 post방식으로 보냄(ajax)
-app.post('/guest/message',async function(req,res){
+
+// 여길타면 매새지를 보내보자
+app.post('/guest/message',(req,res)=>{
     
-    //방이있냐?
-    var ar=""
-    //의사가 방에있냐?
-    var doctor=""
-
-    //logdata 에 추가할 날짜
-    var date=new Date();
-    async function a(){
-        
-        //방이있는지 없는지 확인
-       await StatusModel.findOne({roomCode:req.body.roomCode}).then((result)=>{
-           //없으면 없다고 말해준다.
-            if(result==null){
-                return res.send({roomMiss:true}) 
-            }
-        })
-
-        //일단 값을 입력하자
-        var log = Object.assign(req.body,{lfl:1,date:date})
-        LogModel(log).save((err, status)=>{
-            if(!err)console.log("방금쓴값 : ",status.message)
-
-        })
-        //닥터가 방에있는지 없는지 찾아보자
-        await StatusModel.findOne({roomCode:req.body.roomCode},function(err,result){
-            
-            doctor=result.doctor
-            
-             //닥터가 방에있다면 해당방의 모든 lfl을 0으로 만든다.
-            if(doctor!=null){
-                LogModel.updateMany({roomCode:req.body.roomCode},{lfl:0},(err,result)=>{
-            
-            })
-        }
-        })
-        //마지막으로 모든 message를 보내준다.
-        var statuss={}
-        StatusModel.findOne({roomCode:req.body.roomCode},(err,status)=>{
-                statuss.guest=status.guest;
-                statuss.section=status.section;
-                statuss.guestIO=status.guestIO;
-                statuss.roomCode=status.roomCode;
-                statuss.doctor=status.doctor;
-                statuss.who=req.body.who
-                
-                LogModel.find({roomCode:req.body.roomCode},(err,result)=>{
-                    
-                    res.json(Object.assign(statuss,{conversation:result})) 
-                    
-                })    
-        }) 
-    // console.log("대화들",result)
-        
-    // res.render('guest',result)
-            // res.json(result) 
-         
-    }
-    a();
+    console.log(req.body)
    
-    // LogModel(req.body).save(req.body)
 })
-// app.post("/guest/message", (req,res)=>{
-
-//     var st =req.body
-//     StatusModel.findOne({roomCode:req.body.roomCode},(err,status)=>{
-        
-//         Object.assign(st,{doctor:status.doctor})      
-//         if(st.doctor!=null){
-        
-//             //http://localhost:2000/guest?guest=jmy&section=IM&who=doctor&doctor=IM 접속방법
-//             //닥터가 방에 들어갈경우 roomstatus를 찾아 doctor 부분에 닥터 섹션 update(방에접속했는지 안했는지 확인)
-//             StatusModel.findOneAndUpdate({guest:req.body.guest,section:req.body.section},{doctor:req.body.doctor},(err,status)=>{
-
-//                 if(!status){console.log("방을 못찾았습니다.")}
-           
-//             })
-//              //닥터가 방에들어가는순간 lfl 값 0이됨(읽음표시)
-    
-//             LogModel.updateMany({guest:req.body.guest,section:req.body.section},{lfl:0},(err,status)=>{
-//                 if(err) return console.log("에러가 발생했습니다.",err)
-//             })
-//         }
-        
-//         let nowDate=new Date()
-        
-//         st=Object.assign(st,{date:nowDate})
-        
-//         //로그저장하기
-//         LogModel(st).save((err,logModel)=>{
-//             if(err)return console.log("message저장실패")
-//         })
-//         setTimeout(() => {
-//              //로그 불러와서 뿌려주기
-//             LogModel.find({guest:req.body.guest,roomCode:req.body.roomCode},(err,logs)=>{
-//                 if(err)return console.log(err)
-//                 if(logs){
-//                     Object.assign(req.body,{conversation:logs})
-//                 }else{
-//                     Object.assign(req.body,{conversation:"대화없음"})
-//                     console.log("대화없을때 : ",Object.assign(req.body,{conversation:"대화없음"}))
-//                 }
-//                 StatusModel.findOne({roomCode:req.body.roomCode},(err,status)=>{
-//                     req.body=Object.assign(req.body,{doctor:status.doctor})
-//                     res.render("guest",req.body);
-//                 })
-//             })
-//         }, 50);
-//     })   
-// });
-
 
 //의사 챗팅방 목록보기
 // http://localhost:2000/standBy?section=IM
@@ -301,3 +205,8 @@ app.use((req,res)=>{
 });
 
 
+//소캣포트
+http.listen(2000,function(err){
+    if(err) return console.log(err);
+    console.log("the sever is listening on 2000")
+});

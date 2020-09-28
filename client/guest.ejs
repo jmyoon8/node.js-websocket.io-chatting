@@ -7,27 +7,13 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='/css/chat.css'>
 
-    <script src="../javascript/ChatScript.js"></script>
-    <!-- <script src="/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script>
-        $(function () {
-            var socket = io();
-            $('form').submit(function(e){
-                e.preventDefault(); // prevents page reloading
-                socket.emit('chat message', $('#m').val());
-                $('#m').val('');
-                return false;
-            });
-
-            socket.on('chat message', function(msg){
-                $('#messages').append($('<li>').text(msg));
-            });
-        });
-    </script> -->
+    <script src="../javascript/ChatScript.js"></script>
     
 </head>
-<body>
+
+<body >
     <div class="test">
 
     </div>
@@ -36,17 +22,9 @@
             <div class="participant">
                 <p><%=section%></p>
                 <div class="wrap">
-                <%if(doctor==null){%>
-                    <img id="profile-img" src="../image/doctor.png" style="border: solid 3px red;" class="online" alt="" />
-                    <p>미접속<p>
-                    <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-                    
-                <%}else{%>
                     <img id="profile-img" src="../image/doctor.png" style="border: solid 3px teal;" class="online" alt="" />
                     <p><%=doctor%><p>
                     <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-                <%}%> 
-                    
                 </div>
                 <div class="wrap">
                 <%if(guestIO!=0){%> 
@@ -82,8 +60,9 @@
                 <%}%>
                 
             </div>
+
             <div class="logDiv">
-                <ul>
+                <ul id="messages">
                     <%if(conversation=="emptyLog"){%>
                         <p style="text-align: center;">대화가없습니다 대화를 시작해보세요!!!!</p>
                     <%}else{%>
@@ -122,27 +101,22 @@
                         <%}%>
                     <%}%>
                 </ul>
-                <ul id="messages"></ul>
+
             </div> 
-            <form action="/guest/message"  name="chatting" method="POST" >
-                <!-- 보내야될 데이터 -->
-                <input class="input"    id="" autocomplete="off" type="text" name="message" onKeypress="if(event.keyCode==13){ajaxMessage();}" input placeholder="메세지를입력하세요" autofocus/>
-                <input class="button"   type="button" value="전송" readonly onclick="ajaxMessage();" >
+            <form  action="/guest/message" name="chatting" method="POST"  >
+                <input class="input"    id="m" autocomplete="off" name="message" input placeholder="메세지를입력하세요"onKeypress="javascript:if(event.keyCode==13){ajaxMessage();}" autofocus/>
+                <input class="button"   type="button" value="전송" readonly  >
                 <input type="hidden"    name="guest" value="<%=guest%>"/>
                 <input type="hidden"    name="section"value="<%=section%>"/>
                 <input type="hidden"    name="roomCode" value="<%=roomCode%>"/>
-                <%if(doctor==null){%>
-                    <input type="hidden"    name="doctor"value="<%=doctor%>"/>
-                <%}else{%>
-                    <input type="hidden"    name="doctor" vlaue="null"/>
-                <%}%>
+                <input type="hidden"    id="doc" name="doctor"value="<%=doctor%>"/>
                 <input type="hidden"    name="who"value="<%=who%>"/>
                 <input type="hidden"    name="guestIO" value="<%=guestIO%>">
                 <input type="hidden"    name="conversation" value="<%=conversation%>">
+                
             </form>
             </div>
         </div>
     </div>
-
 </body>
 </html>
