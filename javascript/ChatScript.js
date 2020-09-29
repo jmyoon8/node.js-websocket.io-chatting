@@ -1,6 +1,16 @@
 //로컬 호스트 부분
 var localhost="http://localhost:2000"
 
+
+
+function test() {
+    window.onbeforeunload = function (e) {
+            return 0;
+    };
+}
+
+
+
 //환자 부분에서 닫을 때 사용하는 로직
 function closee(){
     var roomCode=document.chatting.roomCode.value
@@ -64,7 +74,7 @@ function ajaxMessage() {
 
  //의사가 방에 들어갈떄
  function joinDoctor(){
-    var socket=io();
+    
     var number=""
     var list=document.getElementsByName("list");
     for(var i =0; i<list.length; i++){
@@ -80,10 +90,6 @@ function ajaxMessage() {
     var roomCode= document.getElementsByName('roomCode')[number].value
     //socket 방으로 이동(roomCode로 생성)
     location.href="/guest?guest="+guest+"&section="+section+"&who="+who+"&doctor="+section+"&roomCode="+roomCode;
-    socket.on('join',(data)=>{
-        //화면이동
-       
-    })
     
     
 }
@@ -118,12 +124,13 @@ $(function () {
         $('#m').val('');
         return false;
     });
-    
+    //커낵션 되면 실행되는곳
+
+
+
     //매시지 받으면 출력시키는 곳
     socket.on('chat message', function(msg){
-       if(msg=='docJoin'){
-
-       }
+      
        
        var roomCode=msg.roomCode;
        var message=msg.message;
@@ -134,14 +141,7 @@ $(function () {
        var who=document.chatting.who.value;
        var guestIO=msg.guestIO
        var log=""
-       
-       //의사가 들어왔는지 손님이 들어왔는지 확인
-       if(msg=='doctor'){
-           $('#messages').append($('<li class="start"><p >의사가 연결되었습니다 챗팅을 시작하세요!</p></li>'));
-       }else if(msg=='guest'){
-            $('#messages').append($('<li class="start"><p >손님이 연결되었습니다 챗팅을 시작하세요!</p></li>'));
-       }
-       
+         
        if(who=='guest'){
             
            if(msgwho=='guest'){
@@ -175,6 +175,6 @@ $(function () {
 });
 
 
-    
+
     
     

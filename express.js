@@ -1,14 +1,9 @@
-const { Console } = require('console');
 const express = require('express');//express 소환
 const app = express();
 
 //웹소캣 준비(http로 리슨해야한다.)
 const http = require('http').createServer(app);
 const io = require('socket.io')(http)
-//포트지정
-
-
-
 
 app.get('/e', (req, res) => {
 
@@ -35,7 +30,7 @@ app.use('/css',express.static(__dirname+'/css'));             //static(정적) �
 app.use('/image',express.static(__dirname+'/image'));        //use란 서버에 오는 모든 명령어는 use에 등록된 정보를 거쳐서 가야한다는 의미로 middleware라고도 한다.
 app.use('/javascript',express.static(__dirname+'/javascript'));//만약 /css 라는 명령이 들어오면 다음과같이 static 경로로 변환하라 라는뜻 
 
-app.use(express.json()) //bodyparser 소환 for parsing application/json
+app.use(express.json()) //bodyparser 소환 for parsing application/json (express에서 자동으로 body-parser를 쓰개 한다.)
 app.use(express.urlencoded({ extended: true }));
 
 
@@ -57,7 +52,7 @@ app.get("/CROIR", (req,res)=>{
             //방이없으면 새로운방 생성
             var status= Object.assign(req.query,{guestIO:1})
             console.log("방합침",status)
-            StatusModel.create(status,(status)).then((result)=>{
+            StatusModel.create(status).then((result)=>{
                 StatusModel.findOne({guest:req.query.guest, section:req.query.section},(err, status)=>{
                     //찾는방의 룸코드 
                    console.log(status.roomCode)
@@ -85,24 +80,28 @@ app.get("/CROIR", (req,res)=>{
         
 })
    
+app.get("/gg",(req,res)=>{
+
+
+    console.log("꺼짐????")
+
     
+})
 
 
 var whojoin=""
-var whoOut=""
 io.on('connection', function(Socket){
     
     //의사/손님이 서버에 들어왔을때 가 들어올때
     console.log("소캣 커낵션 완료")
-    if(whojoin!='doctor'){
+    if(whojoin=='doctor'){
+
         io.emit ( 'chat message' ,'doctor'); 
     }else {
+
         io.emit ( 'chat message' ,'guest'); 
     }
-    Socket.on('join',(roomCode,fn)=>{
-        console.log(roomCode,"에 입장하셨습니다.")
-        Socket.join(roomCode)
-    })
+ 
     
     //매세지를 보낼때 실행되는곳
     Socket.on ( 'chat message' , (msg) => { 
@@ -110,11 +109,13 @@ io.on('connection', function(Socket){
         
         io.emit ( 'chat message' , msg); 
     }); 
+
     //나갈 때 실행되는곳
     Socket.on('disconnect',()=>{
+
         console.log("끈겼습니다.")
+       
         
-        io.emit('chat message',"off")
     });
 })
 
@@ -188,7 +189,7 @@ app.get("/standBy",function(req,res){
     })
     // 룸코드를 물고나오면 그방에서 닥터 out
     if(req.query.roomCode){
-            
+        whoOut="doctor";
         StatusModel.updateMany({roomCode:req.query.roomCode},{doctor:null},(err,status)=>{
             
         })
@@ -201,11 +202,16 @@ app.post("/guestout",function(req,res){
     console.log(req.body)    
     StatusModel.findOneAndUpdate({roomCode:req.body.roomCode},{guestIO:0},(err,status)=>{
         if(err)console.log(err)
-
+    whoOut="guest"
     })
-    
-    
 });
+
+app.post("/status",(req,res)=>{
+    
+    StatusModel.findOne({roomCode:req.body.roomCode},(err,status)=>{
+        res.json(status)
+    })
+})
 
 //의사 챗팅방에서 post(챗팅입력)값받기
 app.get("/test",(req,res)=>{

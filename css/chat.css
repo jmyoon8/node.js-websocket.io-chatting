@@ -355,3 +355,13 @@ span{
 .start{
     text-align: center;
 }
+
+.online{
+    border: solid 3px teal;
+    
+}
+
+.offline{
+    border: solid 3px red;
+
+}

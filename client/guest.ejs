@@ -10,10 +10,10 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="../javascript/ChatScript.js"></script>
-    
+    <script src="../javascript/status.js"></script>
 </head>
 
-<body >
+<body onload="test();">
     <div class="test">
 
     </div>
@@ -21,22 +21,22 @@
         <div class="UsersDiv">
             <div class="participant">
                 <p><%=section%></p>
+
                 <div class="wrap">
-                    <img id="profile-img" src="../image/doctor.png" style="border: solid 3px teal;" class="online" alt="" />
-                    <p><%=doctor%><p>
+
+                    <img id="doctor" src="../image/doctor.png"  class="" alt="" />
+                    <p id="DN">의사<p>
                     <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                 </div>
+
                 <div class="wrap">
-                <%if(guestIO!=0){%> 
-                    <img id="profile-img" src="../image/patient.png" style="border: solid 3px teal;" class="online"/>
-                    <p><%=guest%></p>
+
+                    <img id="guest" src="../image/patient.png"  class=""/>
+                    <p id="GN">손님</p>
                     <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-                <%}else{guestIO==0%>
-                    <img id="profile-img" src="../image/patient.png" style="border: solid 3px red;" class="online"/>
-                    <p style="font-size: 13px;"><%=guest%>님은<br>퇴장하셨습니다.</p>
-                    <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-                <%}%>
+
                 </div>
+                
                 <div class="menu">
                     <%if(who=='guest'){%>
                         <p>메뉴</p><br>
@@ -72,7 +72,7 @@
                                 <% if(conversation[i].who=='guest'){%>
                                     <li class="replies">
                                         <img src="../image/patient.png" />
-                                    <p class="message"><%=conversation[i].message%></p><p class="lfl"><%=conversation[i].lfl%></p>
+                                    <p class="message"><%=conversation[i].message%></p>
                                     
                                     </li>
                                 <%}else if(conversation[i].who=='doctor'){%>
