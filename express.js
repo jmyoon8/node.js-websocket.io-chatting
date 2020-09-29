@@ -1,3 +1,4 @@
+const { Console } = require('console');
 const express = require('express');//express 소환
 const app = express();
 
@@ -45,43 +46,67 @@ const {StatusModel}=require('./model/roomStatusModel');
 
 //손님 챗팅방 만들거나 기존에 있던방 들어가기
 app.get("/CROIR", (req,res)=>{
-
+    console.log(req.query)
+    let roomCode=""
+    //
     // http://localhost:2000/CROIR?guest=jmyy&section=IM&who=guest     손님이 들어올 URL
     //손님이 챗팅방에 들어오면 자동으로 roomcode를 시퀀스하여 방번호 생성(=방 생성) req에 손님이름 진료과 선정
-    StatusModel.findOne({guest:req.query.guest,section:req.query.section},  function(err,status){
-        console.log("방들어가기전 있는지없는지 체크",status)
-        if(status==null){
+    StatusModel.findOne({guest:req.query.guest,section:req.query.section}).then((result)=>{
+        console.log("방있니?",result)
+        if(result==null){
+            //방이없으면 새로운방 생성
             var status= Object.assign(req.query,{guestIO:1})
-            StatusModel(status).save((err,statusInfo)=>{
-                if(!status)console.log("방생성성공!")
+            console.log("방합침",status)
+            StatusModel.create(status,(status)).then((result)=>{
+                StatusModel.findOne({guest:req.query.guest, section:req.query.section},(err, status)=>{
+                    //찾는방의 룸코드 
+                   console.log(status.roomCode)
+                   roomCode=status.roomCode
+                   res.redirect("/guest?guest="+req.query.guest+"&section="+req.query.section+"&who="+req.query.who+"&roomCode="+status.roomCode)          
+                   //룸코드로 방이동해야한다.
+               })
             })
+            
         }else{
+            //방이있으면 그방에 guest상태값 1로 업데이트
             StatusModel.findOneAndUpdate({guest:req.query.guest,section:req.query.section},{guestIO:1},(err,status)=>{
                 if(!err)console.log("방에 들어오셨습니다.!")
+                StatusModel.findOne({guest:req.query.guest, section:req.query.section},(err, status)=>{
+                    //찾는방의 룸코드 
+                   console.log(status.roomCode)
+                   roomCode=status.roomCode
+                   res.redirect("/guest?guest="+req.query.guest+"&section="+req.query.section+"&who="+req.query.who+"&roomCode="+status.roomCode)          
+                   //룸코드로 방이동해야한다.
+               })
+               
             })
         }
     })
-    res.redirect("/guest?guest="+req.query.guest+"&section="+req.query.section+"&who="+req.query.who)       
-  
-     
-});
+        
+})
+   
+    
+
 
 var whojoin=""
 var whoOut=""
 io.on('connection', function(Socket){
     
     //의사/손님이 서버에 들어왔을때 가 들어올때
-    console.log("다시들어왔습니다.")
+    console.log("소캣 커낵션 완료")
     if(whojoin!='doctor'){
         io.emit ( 'chat message' ,'doctor'); 
     }else {
         io.emit ( 'chat message' ,'guest'); 
     }
-
+    Socket.on('join',(roomCode,fn)=>{
+        console.log(roomCode,"에 입장하셨습니다.")
+        Socket.join(roomCode)
+    })
     
     //매세지를 보낼때 실행되는곳
     Socket.on ( 'chat message' , (msg) => { 
-        console.log(msg.message)
+        console.log(msg)
         
         io.emit ( 'chat message' , msg); 
     }); 
@@ -96,10 +121,8 @@ io.on('connection', function(Socket){
 //방만든 손님이 들어갈 방으로 보냄
 app.get("/guest", async function(req,res){
     whojoin=req.query.who
-    
-    
+    console.log("dd",req.query.doctor)
     var roomCodee=0;
-    
     //회원아이디로 방코드 알려주기
     if(req.query.doctor!=undefined){
         //http://localhost:2000/guest?guest=jmy&section=IM&who=doctor&doctor=IM 접속방법
@@ -108,8 +131,9 @@ app.get("/guest", async function(req,res){
            if(!status){console.log("방을 못찾았습니다.")}
         })
          //닥터가 방에들어가는순간 lfl 값 0이됨(읽음표시)
-        await LogModel.updateMany({guest:req.query.guest,section:req.query.section},{lfl:0},(err,status)=>{
-        })
+            LogModel.updateMany({guest:req.query.guest,section:req.query.section},{lfl:0},(err,status)=>{
+                
+            })
     }
         StatusModel.findOne({guest:req.query.guest,section:req.query.section},(err,status)=>{
             if(err) return console.log("룸 스테이터스조회 실패")
@@ -141,11 +165,16 @@ app.get("/guest", async function(req,res){
 
 // 여길타면 매새지를 보내보자
 app.post('/guest/message',(req,res)=>{
-    
-    console.log(req.body)
+    var date = new Date();
+
+    var log =Object.assign(req.body,{date:date})
+
+    LogModel(log).save((err,data)=>{
+        if(!err)console.log("글입력완료!")
+    })
    
 })
-
+ 
 //의사 챗팅방 목록보기
 // http://localhost:2000/standBy?section=IM
 app.get("/standBy",function(req,res){
@@ -154,9 +183,10 @@ app.get("/standBy",function(req,res){
         if(err) return console.log("dddd",err)
         var roomList={rooms:List}
         //글의 갯수 구하기 (populate를통해)
+        
         res.render("standBy",{rooms:List,section:req.query.section,roomCount:roomList.rooms.length});
     })
-    
+    // 룸코드를 물고나오면 그방에서 닥터 out
     if(req.query.roomCode){
             
         StatusModel.updateMany({roomCode:req.query.roomCode},{doctor:null},(err,status)=>{
@@ -165,6 +195,7 @@ app.get("/standBy",function(req,res){
 
     }
 });
+
 //환자 채팅방 out
 app.post("/guestout",function(req,res){
     console.log(req.body)    

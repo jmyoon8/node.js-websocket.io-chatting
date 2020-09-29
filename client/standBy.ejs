@@ -7,9 +7,10 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='/css/standby.css'>
     
-    <script src="/javascript/ChatScript.js">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="/javascript/ChatScript.js"></script>
 
-    </script>
 </head>
 <body>
         <div class="chattintList">
@@ -22,9 +23,16 @@
                     
                    <%for(var i =0; i<rooms.length; i++){%>
                         <li class="wrap" >
+
                             <img id="profile-img" src="image/patient.png" class="online"/>
-                            <a href="/guest?guest=<%=rooms[i].guest%>&section=<%=section%>&who=doctor&doctor=<%=section%>"><p><%=rooms[i].roomCode%>번방 <%=rooms[i].guest%>의 대화방</p> </a> 
+                            <!-- href="/guest?guest=<%=rooms[i].guest%>&section=<%=section%>&who=doctor&doctor=<%=section%>" --><!-- 방입장 라디오박스 -->
+                            <a><p><%=rooms[i].roomCode%>번방 <%=rooms[i].guest%>의 대화방 입장<input type="radio" name="list" value="<%=i%>" onclick="joinDoctor();"></p></a> 
                             <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+                            <input type="hidden" name="guest"   value="<%=rooms[i].guest%>">
+                            <input type="hidden" name="section" value="<%=rooms[i].section%>">
+                            <input type="hidden" name="who"     value="doctor">
+                            <input type="hidden" name="doctor"  value="<%=section%>">
+                            <input type="hidden" name="roomCode"value="<%=rooms[i].roomCode%>">
                         </li>
                     <%}%>
                 </ul>
