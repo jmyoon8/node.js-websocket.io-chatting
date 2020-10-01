@@ -31,6 +31,11 @@ const StatusSchema=mongoose.Schema({
     },
     guestIO:{
         type:Number
+    },
+    lflLength:{
+        type:Number
+        
+    
     }
 })
 

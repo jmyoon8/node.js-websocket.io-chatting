@@ -3,17 +3,10 @@ var localhost="http://localhost:2000"
 
 
 
-function test() {
-    window.onbeforeunload = function (e) {
-            return 0;
-    };
-}
-
-
 
 //환자 부분에서 닫을 때 사용하는 로직
 function closee(){
-    var roomCode=document.chatting.roomCode.value
+    //소캣나가기
     var data ={roomCode:roomCode}
     //발표전 Ip채크
     var url=localhost+"/guestout"
@@ -95,8 +88,18 @@ function ajaxMessage() {
 }
 
 $(function () {
-    var socket = io();
-
+    var roomCode=document.chatting.roomCode.value
+    var who =document.chatting.who.value
+    var doctor=document.chatting.doctor.value
+    var socket = io(localhost+'/?roomCode='+roomCode+'&who='+who+"&doctor="+doctor);
+    
+    //io와 연결될때 실행할 함수
+    socket.on('connect',()=>{
+        //  alert("life-care와 건강한 챗팅 되세요!")
+        //연결하자마자 해당 룸으로 이동
+        socket.emit('join',{roomCode:roomCode,who:who,doctor:doctor})
+    })
+    
     
     
     $('form').submit(function(e){
@@ -120,7 +123,7 @@ $(function () {
             guestIO:guestIO
         }
         //매시지 보내는곳
-        socket.emit('chat message', data);
+        socket.emit('message', data);
         $('#m').val('');
         return false;
     });
@@ -129,7 +132,7 @@ $(function () {
 
 
     //매시지 받으면 출력시키는 곳
-    socket.on('chat message', function(msg){
+    socket.on('message',function(msg){
       
        
        var roomCode=msg.roomCode;
@@ -147,7 +150,7 @@ $(function () {
            if(msgwho=='guest'){
                 var doctor=document.getElementById("doc").value
                 
-                var lfl="<p class='message'>"+message+"<p class='lfl'>1</p></li>"
+                var lfl="<p class='message'>"+message+"</li>"
                 $('#messages').append($(" <li class='replies'>\
                 <img src='../image/patient.png' />" +lfl));
                             

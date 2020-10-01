@@ -68,7 +68,7 @@ ul li{
     font-size: 120%;
     float: left;
     margin-left: 12px;
-    margin-top: 12px;
+    margin-top: 0px;
 
 }
 .chatting{
@@ -156,4 +156,42 @@ li{
     text-align: center;
     margin-top: 5px;
     
+}
+
+
+
+.box-radio-input input[type="radio"]{
+    display:none;
+    
+}
+
+.box-radio-input input[type="radio"] + span{
+    display:inline-block;
+    background:none;
+    border:1px solid #dfdfdf;    
+    padding:0px 10px;
+    text-align:center;
+    height:35px;
+    line-height:35px;
+    font-weight:500;
+    cursor:pointer;
+    margin-left: calc(100%-20px);
+    
+}
+
+.box-radio-input input[type="radio"]:checked + span{
+    border:1px solid #23a3a7;
+    background:#23a3a7;
+    color:#fff;
+
+}
+
+.lfl{
+    vertical-align: text-top;
+   
+    text-align: center;
+    font-size: 15px;
+    color: yellow;
+    
+
 }

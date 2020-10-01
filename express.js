@@ -41,7 +41,7 @@ const {StatusModel}=require('./model/roomStatusModel');
 
 //손님 챗팅방 만들거나 기존에 있던방 들어가기
 app.get("/CROIR", (req,res)=>{
-    console.log(req.query)
+    
     let roomCode=""
     //
     // http://localhost:2000/CROIR?guest=jmyy&section=IM&who=guest     손님이 들어올 URL
@@ -80,42 +80,57 @@ app.get("/CROIR", (req,res)=>{
         
 })
    
-app.get("/gg",(req,res)=>{
 
 
-    console.log("꺼짐????")
-
-    
-})
-
-
-var whojoin=""
-io.on('connection', function(Socket){
+io.on('connection', function(socket){
     
     //의사/손님이 서버에 들어왔을때 가 들어올때
-    console.log("소캣 커낵션 완료")
-    if(whojoin=='doctor'){
+    console.log("소캣 커낵션 완료->",socket.id)
+    //방들어올떄
+    socket.on('join', (roomCode,fn)=>{
+        console.log(roomCode)
+        
+        if(roomCode.who=="doctor"){
+            StatusModel.findOneAndUpdate({roomCode:roomCode.roomCode},{doctor:roomCode.doctor},(err,status)=>{
+                
+            })
+        }else if(roomCode.who=='guest'){
+            StatusModel.findOneAndUpdate({roomCode:roomCode.roomCode},{guestIO:1},(err,status)=>{
 
-        io.emit ( 'chat message' ,'doctor'); 
-    }else {
-
-        io.emit ( 'chat message' ,'guest'); 
-    }
- 
-    
+            })
+        }
+        socket.join(roomCode.roomCode,()=>{
+            console.log(socket.id," join : ",roomCode.roomCode)
+        })
+    })
+   
     //매세지를 보낼때 실행되는곳
-    Socket.on ( 'chat message' , (msg) => { 
+    socket.on ('message', (msg) => { 
         console.log(msg)
         
-        io.emit ( 'chat message' , msg); 
+        io.to(msg.roomCode).emit ('message', msg); 
     }); 
 
-    //나갈 때 실행되는곳
-    Socket.on('disconnect',()=>{
-
-        console.log("끈겼습니다.")
-       
-        
+    
+    
+   
+    //소캣 서버에서 나갈떄 실행되는곳
+    socket.on('disconnecting',(roomCode)=>{
+        var query=socket.handshake.query;
+        var roomCode=query.roomCode
+        socket.leave(roomCode,()=>{
+            console.log(socket.id,"는 -> leave : ",roomCode)
+        })
+        if(query.who=='doctor'){
+            StatusModel.findOneAndUpdate({roomCode:query.roomCode},{doctor:null},(err,status)=>{
+                if(err) console.log(err)
+            })
+        }else if(query.who=='guest'){
+            StatusModel.findOneAndUpdate({roomCode:query.roomCode},{guestIO:0},(err,status)=>{
+                if(err) console.log(err)
+            })
+        }
+        console.log("끈겼습니다.",socket.id)
     });
 })
 
@@ -128,13 +143,9 @@ app.get("/guest", async function(req,res){
     if(req.query.doctor!=undefined){
         //http://localhost:2000/guest?guest=jmy&section=IM&who=doctor&doctor=IM 접속방법
         //닥터가 방에 들어갈경우 roomstatus를 찾아 doctor 부분에 닥터 섹션 update(방에접속했는지 안했는지 확인)
-        StatusModel.findOneAndUpdate({guest:req.query.guest,section:req.query.section},{doctor:req.query.doctor},(err,status)=>{
-           if(!status){console.log("방을 못찾았습니다.")}
-        })
+        await StatusModel.findOneAndUpdate({guest:req.query.guest,section:req.query.section},{doctor:req.query.doctor})
          //닥터가 방에들어가는순간 lfl 값 0이됨(읽음표시)
-            LogModel.updateMany({guest:req.query.guest,section:req.query.section},{lfl:0},(err,status)=>{
-                
-            })
+          await  LogModel.updateMany({guest:req.query.guest,section:req.query.section},{lfl:0})
     }
         StatusModel.findOne({guest:req.query.guest,section:req.query.section},(err,status)=>{
             if(err) return console.log("룸 스테이터스조회 실패")
@@ -169,7 +180,7 @@ app.post('/guest/message',(req,res)=>{
     var date = new Date();
 
     var log =Object.assign(req.body,{date:date})
-
+    
     LogModel(log).save((err,data)=>{
         if(!err)console.log("글입력완료!")
     })
@@ -178,17 +189,25 @@ app.post('/guest/message',(req,res)=>{
  
 //의사 챗팅방 목록보기
 // http://localhost:2000/standBy?section=IM
-app.get("/standBy",function(req,res){
-    
-    StatusModel.find({section:req.query.section},(err,List)=>{
+app.get("/standBy", (req,res)=>{
+
+    StatusModel.find({section:req.query.section}, async function (err,List){
         if(err) return console.log("dddd",err)
+       
         var roomList={rooms:List}
-        //글의 갯수 구하기 (populate를통해)
-        
-        res.render("standBy",{rooms:List,section:req.query.section,roomCount:roomList.rooms.length});
+        let lfls="";   
+        for(var i = 0; i<roomList.rooms.length; i++){
+            
+            var roomCode=roomList.rooms[i].roomCode;
+            lfls=(await LogModel.find({roomCode:roomCode,lfl:1})).length
+            
+            Object.assign(roomList.rooms[i],{lflLength:lfls})
+        }
+            res.render("standBy",{rooms:List,section:req.query.section,roomCount:roomList.rooms.length});    
     })
-    // 룸코드를 물고나오면 그방에서 닥터 out
-    if(req.query.roomCode){
+    
+      // 룸코드를 물고나오면 그방에서 닥터 out
+      if(req.query.roomCode){
         whoOut="doctor";
         StatusModel.updateMany({roomCode:req.query.roomCode},{doctor:null},(err,status)=>{
             
@@ -213,7 +232,8 @@ app.post("/status",(req,res)=>{
     })
 })
 
-//의사 챗팅방에서 post(챗팅입력)값받기
+
+
 app.get("/test",(req,res)=>{
 
 
