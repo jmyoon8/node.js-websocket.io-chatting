@@ -33,7 +33,8 @@ app.use('/javascript',express.static(__dirname+'/javascript'));//만약 /css 라
 app.use(express.json()) //bodyparser 소환 for parsing application/json (express에서 자동으로 body-parser를 쓰개 한다.)
 app.use(express.urlencoded({ extended: true }));
 
-
+// http://localhost:2000/CROIR?guest=jmyy&section=IM&who=guest 손님이 들어올 URL
+// http://localhost:2000/standBy?section=IM                     의사가 들어올 URL 방
 
 //스키마 모델 소환
 const {LogModel}=require('./model/chatlogModel');
@@ -89,14 +90,11 @@ io.on('connection', function(socket){
     //방들어올떄
     socket.on('join', (roomCode,fn)=>{
         console.log(roomCode)
-        
         if(roomCode.who=="doctor"){
             StatusModel.findOneAndUpdate({roomCode:roomCode.roomCode},{doctor:roomCode.doctor},(err,status)=>{
-                
             })
         }else if(roomCode.who=='guest'){
             StatusModel.findOneAndUpdate({roomCode:roomCode.roomCode},{guestIO:1},(err,status)=>{
-
             })
         }
         socket.join(roomCode.roomCode,()=>{
@@ -107,13 +105,9 @@ io.on('connection', function(socket){
     //매세지를 보낼때 실행되는곳
     socket.on ('message', (msg) => { 
         console.log(msg)
-        
+        //속한 방으로 보네기        
         io.to(msg.roomCode).emit ('message', msg); 
     }); 
-
-    
-    
-   
     //소캣 서버에서 나갈떄 실행되는곳
     socket.on('disconnecting',(roomCode)=>{
         var query=socket.handshake.query;

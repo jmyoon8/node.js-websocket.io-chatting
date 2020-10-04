@@ -135,15 +135,11 @@ $(function () {
     socket.on('message',function(msg){
       
        
-       var roomCode=msg.roomCode;
        var message=msg.message;
        var guest=msg.guest;
        var doctor=msg.doctor
-       var section=msg.section;
        var msgwho=msg.who;
        var who=document.chatting.who.value;
-       var guestIO=msg.guestIO
-       var log=""
          
        if(who=='guest'){
             
