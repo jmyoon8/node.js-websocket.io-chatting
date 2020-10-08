@@ -13,7 +13,7 @@
     <script src="../javascript/status.js"></script>
 </head>
 
-<body onload="test();">
+<body>
     <div class="test">
 
     </div>
@@ -41,7 +41,7 @@
                     <%if(who=='guest'){%>
                         <p>메뉴</p><br>
                         <!-- 손님이 나가면 그냥 roomdstatus에 손님 아이디 없엔뒤 창을끈다. -->
-                        <p><a href="" onclick="self.closee()" >나가기</a></p>
+                        <p><a href="" onclick="closee()" >나가기</a></p>
                     <%}else if(who=='doctor'){%>
                         <p>메뉴</p><br>
                         <p><a href="/standby?section=<%=section%>&roomCode=<%=roomCode%>">나가기</a></p>

@@ -34,7 +34,7 @@ app.use(express.json()) //bodyparser 소환 for parsing application/json (expres
 app.use(express.urlencoded({ extended: true }));
 
 // http://localhost:2000/CROIR?guest=jmyy&section=IM&who=guest 손님이 들어올 URL
-// http://localhost:2000/standBy?section=IM                     의사가 들어올 URL 방
+// http://localhost:2000/standBy?section=IM                    의사가 들어올 URL
 
 //스키마 모델 소환
 const {LogModel}=require('./model/chatlogModel');

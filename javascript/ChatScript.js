@@ -1,11 +1,12 @@
 //로컬 호스트 부분
-var localhost="http://localhost:2000"
+var localhost="http://192.168.0.42:2000"
 
 
 
 
 //환자 부분에서 닫을 때 사용하는 로직
 function closee(){
+    var roomCode=document.chatting.roomCode.value    
     //소캣나가기
     var data ={roomCode:roomCode}
     //발표전 Ip채크
@@ -20,7 +21,7 @@ function closee(){
     ajax.addEventListener('load',()=>{
         alert("의사와의 챗팅방에서 나오셨습니다.")
     })
-    window.self.close();
+    self.close();
 }
 
 // //대화할때 db에 저장해야 할 것들
