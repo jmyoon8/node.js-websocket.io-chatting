@@ -1,5 +1,5 @@
 //로컬 호스트 부분
-var localhost="http://192.168.0.42:2000"
+var localhost="http://192.168.219.123:2000"
 
 
 
@@ -49,6 +49,7 @@ function ajaxMessage() {
         who:who,
         lfl:lfl
     }
+    
     data=JSON.stringify(data)
     var url=localhost+"/guest/message"
     var ajax= new XMLHttpRequest();

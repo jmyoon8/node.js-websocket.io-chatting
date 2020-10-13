@@ -105,7 +105,7 @@
             </div> 
             <form  action="/guest/message" name="chatting" method="POST"  >
                 <input class="input"    id="m" autocomplete="off" name="message" input placeholder="메세지를입력하세요"onKeypress="javascript:if(event.keyCode==13){ajaxMessage();}" autofocus/>
-                <input class="button"   type="button" value="전송" onclick="ajaxMessage();" readonly  >
+                <input class="button"   type="submit" value="전송"  onclick="ajaxMessage();" readonly  >
                 <input type="hidden"    name="guest" value="<%=guest%>"/>
                 <input type="hidden"    name="section"value="<%=section%>"/>
                 <input type="hidden"    name="roomCode" value="<%=roomCode%>"/>

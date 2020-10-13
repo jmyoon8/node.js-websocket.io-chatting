@@ -7,7 +7,7 @@ setInterval(() => {
     var data={roomCode:roomCode}
     //데이타 준비
 
-    var localhost="http://192.168.0.42:2000"
+    var localhost="http://192.168.219.123:2000"
     var ajax=new XMLHttpRequest();
     var url='/status'
     ajax.open('POST',localhost+url)
