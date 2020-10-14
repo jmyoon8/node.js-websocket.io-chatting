@@ -33,7 +33,7 @@ app.use('/javascript',express.static(__dirname+'/javascript'));//만약 /css 라
 app.use(express.json()) //bodyparser 소환 for parsing application/json (express에서 자동으로 body-parser를 쓰개 한다.)
 app.use(express.urlencoded({ extended: true }));
 
-// http://192.168.219.123:2000/CROIR?guest=jmyy&section=IM&who=guest 손님이 들어올 URL
+// http://192.168.219.123:2000/CROIR?guest=jmyy&section=IM&who=guest 손님이 들어올 URL(챗봇과 연계)
 // http://192.168.219.123:2000/standBy?section=IM                    의사가 들어올 URL
 
 //스키마 모델 소환
