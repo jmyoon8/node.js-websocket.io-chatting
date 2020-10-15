@@ -23,25 +23,20 @@
                 <p><%=section%></p>
 
                 <div class="wrap">
-
-                    <img id="doctor" src="../image/doctor.png"  class="" alt="" />
+                    <img id="doctor" src="../image/doctor.png"  class="" />
                     <p id="DN">의사<p>
-                    <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
                 </div>
 
                 <div class="wrap">
-
                     <img id="guest" src="../image/patient.png"  class=""/>
                     <p id="GN">손님</p>
-                    <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
-
                 </div>
                 
                 <div class="menu">
                     <%if(who=='guest'){%>
-                        <p>메뉴</p><br>
+                        <p style="color: black; font-weight: bold;">메뉴</p><br>
                         <!-- 손님이 나가면 그냥 roomdstatus에 손님 아이디 없엔뒤 창을끈다. -->
-                        <p><a href="" onclick="closee()" >나가기</a></p>
+                        <p><a href="" class="getoust"  onclick="closee()" >나가기</a></p>
                     <%}else if(who=='doctor'){%>
                         <p>메뉴</p><br>
                         <p><a href="/standby?section=<%=section%>&roomCode=<%=roomCode%>">나가기</a></p>
