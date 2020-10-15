@@ -274,10 +274,11 @@ p.message{
     padding: 10px 15px;
     border-radius: 20px;
     line-height: 100%;
-    max-width: 300px;
+    max-width: 320px;
     background: #2054e2;
     color: white;
     float: right;
+    line-height: 24px;
     
 }
 p.lfl{

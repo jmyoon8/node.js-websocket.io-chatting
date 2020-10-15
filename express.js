@@ -42,9 +42,7 @@ const {StatusModel}=require('./model/roomStatusModel');
 
 //손님 챗팅방 만들거나 기존에 있던방 들어가기
 app.get("/CROIR", (req,res)=>{
-    
     let roomCode=""
-    //
     // http://localhost:2000/CROIR?guest=jmyy&section=IM&who=guest     손님이 들어올 URL
     //손님이 챗팅방에 들어오면 자동으로 roomcode를 시퀀스하여 방번호 생성(=방 생성) req에 손님이름 진료과 선정
     StatusModel.findOne({guest:req.query.guest,section:req.query.section}).then((result)=>{
@@ -62,7 +60,6 @@ app.get("/CROIR", (req,res)=>{
                    //룸코드로 방이동해야한다.
                })
             })
-            
         }else{
             //방이있으면 그방에 guest상태값 1로 업데이트
             StatusModel.findOneAndUpdate({guest:req.query.guest,section:req.query.section},{guestIO:1},(err,status)=>{
@@ -74,11 +71,9 @@ app.get("/CROIR", (req,res)=>{
                    res.redirect("/guest?guest="+req.query.guest+"&section="+req.query.section+"&who="+req.query.who+"&roomCode="+status.roomCode)          
                    //룸코드로 방이동해야한다.
                })
-               
             })
         }
     })
-        
 })
    
 
