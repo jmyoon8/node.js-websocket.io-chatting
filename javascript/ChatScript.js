@@ -105,7 +105,7 @@ $(function () {
     
     
     $('form').submit(function(e){
-        
+
         e.preventDefault(); // prevents page reloading
         var message = document.getElementById("m").value;
         var guest=document.chatting.guest.value;
@@ -136,7 +136,6 @@ $(function () {
     //매시지 받으면 출력시키는 곳
     socket.on('message',function(msg){
       
-       
        var message=msg.message;
        var guest=msg.guest;
        var doctor=msg.doctor

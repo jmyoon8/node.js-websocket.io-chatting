@@ -1,6 +1,6 @@
 
 const mongoose = require('mongoose');//mongoose 소환 스키마와 모델을 이용해서 데이터를 다룸
-var autoIncrement  = require('mongoose-auto-increment');
+const autoIncrement  = require('mongoose-auto-increment');
 
 //몽고DB연결
 let DBURL="mongodb+srv://test:test@test.3qxcs.mongodb.net/chatDB?retryWrites=true&w=majority"
@@ -8,7 +8,6 @@ const connection=mongoose.createConnection(DBURL,{useUnifiedTopology: true, useN
 
 //시퀀스 사용하도록 허용
 mongoose.set('useCreateIndex', true);
-
 autoIncrement.initialize(connection)
 
 const StatusSchema=mongoose.Schema({
@@ -27,15 +26,12 @@ const StatusSchema=mongoose.Schema({
     guest:{
         //손님이 방에있으면 아이디생성
         type:String
-        
     },
     guestIO:{
         type:Number
     },
     lflLength:{
         type:Number
-        
-    
     }
 })
 

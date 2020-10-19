@@ -79,8 +79,7 @@ app.get("/CROIR", (req,res)=>{
 
 
 io.on('connection', function(socket){
-    
-    //의사/손님이 서버에 들어왔을때 가 들어올때
+       //의사/손님이 서버에 들어왔을때 가 들어올때
     console.log("소캣 커낵션 완료->",socket.id)
     //방들어올떄
     socket.on('join', (roomCode,fn)=>{
